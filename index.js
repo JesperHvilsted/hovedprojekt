@@ -77,3 +77,5 @@ knap.onclick = function(){
         }
     }
 }
+
+//lidt ekstra
