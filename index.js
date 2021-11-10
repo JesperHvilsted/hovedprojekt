@@ -57,7 +57,9 @@ function simulerStrækning(){
     for(a = 0; a < sideprofil.length; a++){
         if(items[sideprofil[a][0]][sideprofil[a][1]] == 1){
             console.log("De støder på hinanden")
+            h2.innerHTML = "Sideprofil støder på profil"
             console.log(sideprofil[a][0] + ", " + sideprofil[a][1])
+            break;
         }
     }
 }
