@@ -45,6 +45,7 @@ const sideprofil = [
     [12,12],[12,13],[12,14],[12,15]
 ]
 
+const test = 0; 
 
 //Sætte sideprofil ind. 
 /*
