@@ -3,12 +3,6 @@ var h2 = document.getElementById("h2");
 var indlæsKnap = document.getElementById("indlæsknap");
 var knap = document.getElementById("testknappen");
 
-var rute1 = document.getElementById("rute1");
-var rute2 = document.getElementById("rute2");
-
-var array = [];
-array.push(rute1)
-array.push(rute2)
 
 //Lave X&Y map 
 const items = new Array(20).fill(0).map(() => new Array(20).fill(0));
@@ -54,6 +48,7 @@ for(a = 0; a < sideprofil.length; a++){
 }
 */
 
+/*
 function simulerStrækning(){
     for(a = 0; a < sideprofil.length; a++){
         if(items[sideprofil[a][0]][sideprofil[a][1]] == 1){
@@ -64,15 +59,17 @@ function simulerStrækning(){
         }
     }
 }
+*/
 
-indlæsKnap.onclick = function(){
+/*indlæsKnap.onclick = function(){
     //Sætte profil ind i koordinatsystemet. Hvis 0 så er der ingen genstand, hvis 1 så er der en genstand.
     for(a = 0; a < profil.length; a++){
         items[profil[a][0]][profil[a][1]] = 1
     }
 }
+*/
 
-knap.onclick = function(){
+/*knap.onclick = function(){
     for(i = 0; i < array.length; i++){
         if(array[i].checked == true){
             console.log(items.reverse())
@@ -80,5 +77,258 @@ knap.onclick = function(){
         }
     }
 }
+*/
 
-//lidt ekstra
+//----------SVG---------------------------------
+// initialize
+const svg = document.getElementById('mysvg')
+const NS = svg.getAttribute('xmlns')
+const btnProfil = document.getElementById('btnIndlæsknap')
+const btnSimuler = document.getElementById('btnSimuler')
+let rute1 = document.getElementById("rute1");
+let rute2 = document.getElementById("rute2");
+let ruteOvertextHøjre = document.getElementById("ruteOvertextHøjre")
+let btnBack1 = document.getElementById("btnBack1")
+let btnNext1 = document.getElementById("btnNext1")
+let btnBackAll = document.getElementById("btnBackAll")
+let btnNextAll = document.getElementById("btnNextAll")
+let svgX = document.getElementById("svgX");
+let svgY = document.getElementById("svgY");
+
+
+var ruteArray = [];
+ruteArray.push(rute1)
+ruteArray.push(rute2)
+
+sideprofiler = []
+sideprofilIndex = 0;
+
+// events
+svg.addEventListener('pointerdown', createCircle);
+svg.addEventListener('pointermove', getCoordinates);
+btnProfil.addEventListener('click', displayProfil)
+btnSimuler.addEventListener('click', chooseRoute)
+btnNext1.addEventListener('click', displayNextSideprofile)
+btnBack1.addEventListener('click', displaypreviousSideprofile)
+btnBackAll.addEventListener('click', displayFirstSideprofile)
+btnNextAll.addEventListener('click', displayLastSideprofile)
+
+
+
+//profils 
+const profilVogn = [
+  [250,400],[300,400],
+  [300, 300], [330, 300],
+  [330, 270], [300,270],
+  [300, 240], [200,240],
+  [200, 270], [150, 270],
+  [150, 340], [200, 340],
+  [200, 400], [250,400]
+]
+
+const sideprofil1 = [
+  [100, 400], [100, 100],
+  [160, 100], [190, 120],
+  [200, 130], [200, 150],
+  [190, 180], [100, 180]
+]
+
+const sideprofil2 = [
+  [100, 300],[130, 300],
+  [130, 270],[70, 270],
+  [70, 240],[100, 240], 
+  [100, 100],
+  [160, 100], [190, 120],
+  [200, 130], [200, 150],
+  [190, 180], [100, 180],
+  [100, 400]
+]
+
+const sideprofil3 = [
+  [100, 420], [100, 250],
+  [130, 200],[180, 180],
+  [320, 180], [370, 200],
+  [400, 250], [400, 420]
+]
+
+//-------------------------------------------------
+//----------Event and Functions-------------------- 
+
+// add a circle to the target
+function createCircle(event) {
+  
+  // Er der allerede en linje her?
+  //if (event.target.nodeName === 'line') return;
+
+  // add circle to containing element
+  const target = event.target.closest('g') || event.target.ownerSVGElement || event.target //Target er det element man trykker på. Her er det vores svg element. 
+
+  //clientX & Y er eventets koordinater. Dette er et pointer down, så det er der, hvor der klikkes. Det i forhold til screen width and height
+  svgP = svgPoint(target, event.clientX, event.clientY) 
+  cX = Math.round(svgP.x)
+  cY = Math.round(svgP.y)
+  console.log("ny x: " + svgP.x)
+  console.log("ny y: " + svgP.y)
+  circle = document.createElementNS(NS, 'polyline');
+
+  circle.setAttribute("points" , points);
+  circle.setAttribute("stroke", "black");
+  circle.setAttribute("fill", "none");
+
+  svg.appendChild(circle);
+}
+
+function getCoordinates(event) {
+const svgP = svgPoint(svg, event.clientX, event.clientY);
+svgX.value = svgP.x;
+svgY.value = svgP.y; 
+
+svgXTextContent = isNaN(svgX.value) ? svgX.value : Math.round(svgX.value);
+svgYTextContent = isNaN(svgY.value) ? svgY.value : Math.round(svgY.value);
+
+svgX.textContent = "X: " + svgXTextContent
+svgY.textContent = "Y: " + svgYTextContent
+}
+
+
+// translate page to SVG co-ordinate
+function svgPoint(element, x, y) {
+
+  var pt = svg.createSVGPoint(); //Det repræsenterer et 2D eller 3D point i SVG koordinat systemet. Det er lavet på svg elementet. 
+  console.log("x: " + x)
+  console.log("y: " + y)
+  pt.x = x;
+  pt.y = y;
+  return pt.matrixTransform(element.getScreenCTM().inverse()); //Fra svg units til screen coordinater. X&Y egenskaber som giver koordinater på svg viewbox.
+}
+
+function displayProfil(){
+
+  convertedProfil = convertProfil(profilVogn)
+
+  if(svg.childElementCount > 3){
+    svg.removeChild(svg.lastChild)
+  } else{
+    drawProfile(convertedProfil, "profil")
+  }
+}
+
+function displayNextSideprofile(){
+  if(svg.childElementCount > 4){
+    svg.removeChild(svg.lastChild)
+  }
+
+  if(sideprofiler.length > 0){
+    if(!(sideprofilIndex +1 > sideprofiler.length)){
+      sideprofilIndex ++;
+      drawProfile(sideprofiler[sideprofilIndex], "sideprofil")
+    }
+  }
+}
+
+function displaypreviousSideprofile(){
+  if(svg.childElementCount > 4){
+    svg.removeChild(svg.lastChild)
+  }
+
+  if(sideprofiler.length > 0){
+    if(!(sideprofilIndex -1 == -1)){
+      sideprofilIndex --;
+      drawProfile(sideprofiler[sideprofilIndex], "sideprofil")
+    }
+  }
+}
+
+function displayFirstSideprofile(){
+  if(svg.childElementCount > 4){
+    svg.removeChild(svg.lastChild)
+  }
+
+  if(sideprofiler.length > 0){
+      sideprofilIndex = 0;
+      drawProfile(sideprofiler[0], "sideprofil")
+  }
+}
+
+function displayLastSideprofile(){
+  if(svg.childElementCount > 4){
+    svg.removeChild(svg.lastChild)
+  }
+
+  if(sideprofiler.length > 0){
+      sideprofilIndex = sideprofiler.length;
+      drawProfile(sideprofiler[sideprofiler.length -1], "sideprofil")
+  }
+}
+
+function chooseRoute(){
+  if(svg.childElementCount > 3){
+    if(rute1.checked){
+      useRute1()
+      ruteOvertextHøjre.innerHTML = "Rute1"
+    } else if(rute2.checked){
+      useRute2()
+      ruteOvertextHøjre.innerHTML = "Rute2"
+    } else{
+      ruteOvertextHøjre.innerHTML = "Ingen rute valgt"
+    }
+  }
+  else{
+    console.log("mangler at indsætte profil")
+  }
+}
+
+function useRute1(){
+    sideprofiler = []
+    sideprofilIndex = 0
+    sideprofiler.push(sideprofil1)
+    sideprofiler.push(sideprofil2)
+    sideprofiler.push(sideprofil3)
+    console.log(sideprofiler[0])
+    for(i in sideprofiler){
+        console.log("I er; " + typeof(i))
+        tal = parseInt(i)
+        sideprofiler[i] = convertProfil(sideprofiler[i])
+    }
+    if(svg.childElementCount > 4){
+      svg.removeChild(svg.lastChild)
+    }
+    drawProfile(sideprofiler[0], "sideprofil")
+}
+
+function useRute2(){
+  sideprofiler = []
+  sideprofilIndex = 0
+  sideprofiler.push(sideprofil1)
+  sideprofiler.push(sideprofil3)
+  sideprofiler.push(sideprofil2)
+  console.log(sideprofiler[0])
+  for(i in sideprofiler){
+      tal = parseInt(i)
+      sideprofiler[i] = convertProfil(sideprofiler[i])
+  }
+  if(svg.childElementCount > 4){
+    svg.removeChild(svg.lastChild)
+  }
+  drawProfile(sideprofiler[0], "sideprofil")
+}
+
+
+  function convertProfil(profil){
+    let points = "";
+    for(i in profil){
+      points += profil[i] + " "
+    }
+    return points;
+  }
+
+  function drawProfile(convertedProfil, profilID){
+    lineOfProfil = document.createElementNS(NS, 'polyline')
+    
+    lineOfProfil.setAttribute("points" , convertedProfil);
+    lineOfProfil.setAttribute("stroke", "black");
+    lineOfProfil.setAttribute("fill", "none");
+    lineOfProfil.setAttribute('id', profilID)
+  
+    svg.appendChild(lineOfProfil);
+  }

@@ -202,10 +202,20 @@
             </form>
         </div>
     </section>
-    <section class="sektion 5 ">
-        <div class="objectprofil">
-            <h2 id="h2">indsæt grafisk objektprofil</h2>
-            <img src="objectprofil.png" alt="">
+    <section class="sektion 5">
+        <div class="downsektion2">
+            <h1>Grafisk profil</h1>
+            <h1 id="ruteOvertextHøjre">sideprofil</h1>
+        </div> 
+        <div class="downsektion1">
+            <svg xmlns="http://www.w3.org/2000/svg" id="mysvg" viewBox="0 0 500 500" preserveAspectRatio="xMidYmid meet">
+                <line x1="250" y1="0" x2="250" y2="500" style="stroke: rgb(139, 139, 139); stroke-dasharray: 10 10;"></line>
+                <line x1="0" y1="420" x2="500" y2="420" style="stroke: rgb(51, 51, 51); stroke-dasharray: 6 10;"></line>
+                <line x1="150" y1="405" x2="350" y2="405" style="stroke: rgb(253, 145, 145); stroke-dasharray: 6 10;"></line>
+            </svg>
+        </div>
+        <div id="output">
+            <strong id="strong">SVG Coordinates:</strong> <span id="svgX"></span> <span id="svgY"></span>
         </div>
     </section>
 
@@ -226,10 +236,10 @@
 
                     <div class="outline2">
                         <div class="outline3">
-                                <button>1</button>
-                                <button>></button>
-                                <button>2</button>
-                                <button>>></button>
+                                <button type="button" id="btnBack1"><</button>
+                                <button type="button" id="btnNext1">></button>
+                                <button type="button" id="btnBackAll"><<</button>
+                                <button type="button" id="btnNextAll">>></button>
                         </div>
                     </div>
 
@@ -291,14 +301,14 @@
             </div>
             <div>
                 <label for="">Indlæs profil</label>
-                <button type="button" id="indlæsknap"> Indlæs</button>
+                <button type="button" id="btnIndlæsknap"> Indlæs</button>
             </div>
             <div>
                 <input type="radio" name="navn1" id="rute1"> Rute1
                 <input type="radio" name="navn1" id="rute2"> Rute2
             </div>
             <div>
-                <button type="button" id="testknappen">Simuler rute</button>
+                <button type="button" id="btnSimuler">Simuler rute</button>
             </div>
         </div>
     </section>
