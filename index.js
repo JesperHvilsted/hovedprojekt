@@ -82,6 +82,7 @@ function simulerStrækning(){
 //----------SVG---------------------------------
 // initialize
 const svg = document.getElementById('mysvg')
+const svgProfile = document.getElementById('mysvgProfileOnly')
 const NS = svg.getAttribute('xmlns')
 const btnProfil = document.getElementById('btnIndlæsknap')
 const btnSimuler = document.getElementById('btnSimuler')
@@ -206,10 +207,19 @@ function displayProfil(){
 
   convertedProfil = convertProfil(profilVogn)
 
+  asymmetriskProfil = convertToSymmetric(profilVogn)
+  asymmetriskProfilOriginal = convertProfil(profilVogn)
+
   if(svg.childElementCount > 3){
     svg.removeChild(svg.lastChild)
   } else{
-    drawProfile(convertedProfil, "profil")
+    drawProfile(asymmetriskProfilOriginal, "shadowProfil", svg)
+    drawProfile(asymmetriskProfil, "shadowProfil", svg)
+    drawProfile(convertedProfil, "profil", svg)
+
+    drawProfile(asymmetriskProfilOriginal, "shadowProfil", svgProfile)
+    drawProfile(asymmetriskProfil, "shadowProfil", svgProfile)
+    drawProfile(convertedProfil, "profil", svgProfile)
   }
 }
 
@@ -221,7 +231,7 @@ function displayNextSideprofile(){
   if(sideprofiler.length > 0){
     if(!(sideprofilIndex +1 > sideprofiler.length)){
       sideprofilIndex ++;
-      drawProfile(sideprofiler[sideprofilIndex], "sideprofil")
+      drawProfile(sideprofiler[sideprofilIndex], "sideprofil", svg)
     }
   }
 }
@@ -234,7 +244,7 @@ function displaypreviousSideprofile(){
   if(sideprofiler.length > 0){
     if(!(sideprofilIndex -1 == -1)){
       sideprofilIndex --;
-      drawProfile(sideprofiler[sideprofilIndex], "sideprofil")
+      drawProfile(sideprofiler[sideprofilIndex], "sideprofil", svg)
     }
   }
 }
@@ -246,7 +256,7 @@ function displayFirstSideprofile(){
 
   if(sideprofiler.length > 0){
       sideprofilIndex = 0;
-      drawProfile(sideprofiler[0], "sideprofil")
+      drawProfile(sideprofiler[0], "sideprofil", svg)
   }
 }
 
@@ -257,7 +267,7 @@ function displayLastSideprofile(){
 
   if(sideprofiler.length > 0){
       sideprofilIndex = sideprofiler.length;
-      drawProfile(sideprofiler[sideprofiler.length -1], "sideprofil")
+      drawProfile(sideprofiler[sideprofiler.length -1], "sideprofil", svg)
   }
 }
 
@@ -293,7 +303,7 @@ function useRute1(){
     if(svg.childElementCount > 4){
       svg.removeChild(svg.lastChild)
     }
-    drawProfile(sideprofiler[0], "sideprofil")
+    drawProfile(sideprofiler[0], "sideprofil", svg)
 }
 
 function useRute2(){
@@ -307,10 +317,10 @@ function useRute2(){
       tal = parseInt(i)
       sideprofiler[i] = convertProfil(sideprofiler[i])
   }
-  if(svg.childElementCount > 4){
+  if(svg.childElementCount > 6){
     svg.removeChild(svg.lastChild)
   }
-  drawProfile(sideprofiler[0], "sideprofil")
+  drawProfile(sideprofiler[0], "sideprofil", svg)
 }
 
 
@@ -322,13 +332,41 @@ function useRute2(){
     return points;
   }
 
-  function drawProfile(convertedProfil, profilID){
+  function convertToSymmetric(profil){
+    let points = ""; 
+    
+    for(i in profil){
+      if(profil[i][0] - 250 >= 0){
+        let testX = profil[i][0] - (profil[i][0] - 250) * 2
+        points += testX + ", " + profil[i][1] + " "
+      }
+      else{
+        let testY = profil[i][0] + (Math.abs(profil[i][0] - 250)) * 2
+        points += testY + ", " + profil[i][1] + " "
+      }
+    }
+
+    for(i in profil){
+      points += profil[i] + " "
+    }
+  
+    return points;
+  }
+
+  function drawProfile(convertedProfil, profilID, svgPlatform){
     lineOfProfil = document.createElementNS(NS, 'polyline')
     
     lineOfProfil.setAttribute("points" , convertedProfil);
     lineOfProfil.setAttribute("stroke", "black");
-    lineOfProfil.setAttribute("fill", "none");
     lineOfProfil.setAttribute('id', profilID)
-  
-    svg.appendChild(lineOfProfil);
+    if(profilID != "shadowProfil")
+    {
+    }
+    if(profilID == "shadowProfil"){
+      lineOfProfil.setAttribute('stroke-opacity', '.001')
+      lineOfProfil.setAttribute('fill', 'rgb(218, 218, 218)')
+    }else{
+      lineOfProfil.setAttribute('fill', 'none')
+    }
+    svgPlatform.appendChild(lineOfProfil);
   }
