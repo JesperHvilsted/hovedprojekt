@@ -1,9 +1,3 @@
-var h2 = document.getElementById("h2");
-
-var indlæsKnap = document.getElementById("indlæsknap");
-var knap = document.getElementById("testknappen");
-
-
 //Lave X&Y map 
 const items = new Array(20).fill(0).map(() => new Array(20).fill(0));
 
@@ -82,20 +76,29 @@ function simulerStrækning(){
 //----------SVG---------------------------------
 // initialize
 const svg = document.getElementById('mysvg')
-const svgProfile = document.getElementById('mysvgProfileOnly')
+const svgProfileOnly = document.getElementById('mysvgProfileOnly')
+const svgDrawProfile = document.getElementById('mysvgDrawProfile')
+
 const NS = svg.getAttribute('xmlns')
+
 const btnProfil = document.getElementById('btnIndlæsknap')
 const btnSimuler = document.getElementById('btnSimuler')
+
 let rute1 = document.getElementById("rute1");
 let rute2 = document.getElementById("rute2");
-let ruteOvertextHøjre = document.getElementById("ruteOvertextHøjre")
+let RouteHeadlineRight = document.getElementById("RouteHeadlineRight")
+
 let btnBack1 = document.getElementById("btnBack1")
 let btnNext1 = document.getElementById("btnNext1")
 let btnBackAll = document.getElementById("btnBackAll")
 let btnNextAll = document.getElementById("btnNextAll")
+
+let btnBeginDraw = document.getElementById('btnBeginDraw')
+let btnEndDraw = document.getElementById('btnEndDraw')
+let btnErase = document.getElementById('btnErase')
+
 let svgX = document.getElementById("svgX");
 let svgY = document.getElementById("svgY");
-
 
 var ruteArray = [];
 ruteArray.push(rute1)
@@ -105,10 +108,16 @@ sideprofiler = []
 sideprofilIndex = 0;
 
 // events
-svg.addEventListener('pointerdown', createCircle);
-svg.addEventListener('pointermove', getCoordinates);
+svgDrawProfile.addEventListener('pointerdown', createCircle)
+btnErase.addEventListener('click', removeLastPoint)
+btnBeginDraw.addEventListener('click', beginDraw)
+btnEndDraw.addEventListener('click', endDraw)
+
+svgProfileOnly.addEventListener('pointermove', getCoordinates)
+
 btnProfil.addEventListener('click', displayProfil)
 btnSimuler.addEventListener('click', chooseRoute)
+
 btnNext1.addEventListener('click', displayNextSideprofile)
 btnBack1.addEventListener('click', displaypreviousSideprofile)
 btnBackAll.addEventListener('click', displayFirstSideprofile)
@@ -116,7 +125,10 @@ btnNextAll.addEventListener('click', displayLastSideprofile)
 
 
 
-//profils 
+//profils
+let opretProfilVogn = []
+let draw = false
+
 const profilVogn = [
   [250,400],[300,400],
   [300, 300], [330, 300],
@@ -155,11 +167,41 @@ const sideprofil3 = [
 //-------------------------------------------------
 //----------Event and Functions-------------------- 
 
+function beginDraw(){
+  draw = true; 
+}
+
+function endDraw(){
+  draw = false;
+  if(svgDrawProfile.childElementCount > 3){
+    svgDrawProfile.removeChild(svgDrawProfile.lastChild)
+    console.log("er det den første?: " + opretProfilVogn[0])
+    opretProfilVogn.push(opretProfilVogn[0])
+    ny = convertProfil(opretProfilVogn);
+    lineOfProfil.setAttribute("points" , ny);
+    lineOfProfil.setAttribute("stroke", "black");
+    lineOfProfil.setAttribute("fill", "none");
+    lineOfProfil.setAttribute('id', "testID")
+    svgDrawProfile.appendChild(lineOfProfil);
+  } 
+}
+
+function removeLastPoint (){
+  if(svgDrawProfile.childElementCount > 3){
+    svgDrawProfile.removeChild(svgDrawProfile.lastChild)
+    opretProfilVogn.pop()
+    ny = convertProfil(opretProfilVogn);
+    lineOfProfil.setAttribute("points" , ny);
+    lineOfProfil.setAttribute("stroke", "black");
+    lineOfProfil.setAttribute("fill", "none");
+    lineOfProfil.setAttribute('id', "testID")
+    svgDrawProfile.appendChild(lineOfProfil);
+  }
+}
+
 // add a circle to the target
 function createCircle(event) {
-  
-  // Er der allerede en linje her?
-  //if (event.target.nodeName === 'line') return;
+if(draw){
 
   // add circle to containing element
   const target = event.target.closest('g') || event.target.ownerSVGElement || event.target //Target er det element man trykker på. Her er det vores svg element. 
@@ -168,19 +210,34 @@ function createCircle(event) {
   svgP = svgPoint(target, event.clientX, event.clientY) 
   cX = Math.round(svgP.x)
   cY = Math.round(svgP.y)
-  console.log("ny x: " + svgP.x)
-  console.log("ny y: " + svgP.y)
-  circle = document.createElementNS(NS, 'polyline');
 
+  lineOfProfil = document.createElementNS(NS, 'polyline')
+
+  if(svgDrawProfile.childElementCount > 3){
+    svgDrawProfile.removeChild(svgDrawProfile.lastChild)
+  }
+
+  opretProfilVogn.push([cX,cY])
+
+  ny = convertProfil(opretProfilVogn);
+    
+  lineOfProfil.setAttribute("points" , ny);
+  lineOfProfil.setAttribute("stroke", "black");
+  lineOfProfil.setAttribute("fill", "none");
+  lineOfProfil.setAttribute('id', "testID")
+
+  /*
   circle.setAttribute("points" , points);
   circle.setAttribute("stroke", "black");
   circle.setAttribute("fill", "none");
+  */
 
-  svg.appendChild(circle);
+  svgDrawProfile.appendChild(lineOfProfil);
+  }
 }
 
 function getCoordinates(event) {
-const svgP = svgPoint(svg, event.clientX, event.clientY);
+const svgP = svgPoint(svgProfileOnly, event.clientX, event.clientY);
 svgX.value = svgP.x;
 svgY.value = svgP.y; 
 
@@ -196,8 +253,6 @@ svgY.textContent = "Y: " + svgYTextContent
 function svgPoint(element, x, y) {
 
   var pt = svg.createSVGPoint(); //Det repræsenterer et 2D eller 3D point i SVG koordinat systemet. Det er lavet på svg elementet. 
-  console.log("x: " + x)
-  console.log("y: " + y)
   pt.x = x;
   pt.y = y;
   return pt.matrixTransform(element.getScreenCTM().inverse()); //Fra svg units til screen coordinater. X&Y egenskaber som giver koordinater på svg viewbox.
@@ -217,9 +272,9 @@ function displayProfil(){
     drawProfile(asymmetriskProfil, "shadowProfil", svg)
     drawProfile(convertedProfil, "profil", svg)
 
-    drawProfile(asymmetriskProfilOriginal, "shadowProfil", svgProfile)
-    drawProfile(asymmetriskProfil, "shadowProfil", svgProfile)
-    drawProfile(convertedProfil, "profil", svgProfile)
+    drawProfile(asymmetriskProfilOriginal, "shadowProfil", svgProfileOnly)
+    drawProfile(asymmetriskProfil, "shadowProfil", svgProfileOnly)
+    drawProfile(convertedProfil, "profil", svgProfileOnly)
   }
 }
 
@@ -271,16 +326,44 @@ function displayLastSideprofile(){
   }
 }
 
+function isCollision(sideprofil, profil){
+  for(i = 0; i < profil.length; i++){
+    if(i + 2 <= profil.length){
+      for(a = 0; a < sideprofil.length; a++){
+        if(a +2 <= sideprofil.length){
+          //console.log("a,v,v,fe,de,,: " + sideprofil[a][0]+ " " + sideprofil[a][1] + " " + sideprofil[a+1][0] + " " + sideprofil[a+1][1])
+          if(isPointInPoly(sideprofil[a][0],sideprofil[a][1], sideprofil[a+1][0], sideprofil[a+1][1], profil[i][0], profil[i][1], profil[i +1][0], profil[i+1][1])){
+            console.log("Der er ingen collision")
+          }
+        }
+      }
+    }
+  }
+}
+
+function isPointInPoly(a,b,c,d,p,q,r,s) {
+  //console.log("a,b,c,d,e,f,g,h:" +a+" "+b+" "+c+" "+d+" "+p+" "+q+" "+r+" "+s)
+  var det, gamma, lambda;
+  det = (c - a) * (s - q) - (r - p) * (d - b);
+  if (det === 0) {
+    return false;
+  } else {
+    lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+    gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+  }
+};
+
 function chooseRoute(){
   if(svg.childElementCount > 3){
     if(rute1.checked){
       useRute1()
-      ruteOvertextHøjre.innerHTML = "Rute1"
+      RouteHeadlineRight.innerHTML = "Rute1"
     } else if(rute2.checked){
       useRute2()
-      ruteOvertextHøjre.innerHTML = "Rute2"
+      RouteHeadlineRight.innerHTML = "Rute2"
     } else{
-      ruteOvertextHøjre.innerHTML = "Ingen rute valgt"
+      RouteHeadlineRight.innerHTML = "Ingen rute valgt"
     }
   }
   else{
@@ -309,14 +392,23 @@ function useRute1(){
 function useRute2(){
   sideprofiler = []
   sideprofilIndex = 0
+  
+  for(c = 0; c < sideprofil1.length; c++){
+    sideprofil1[c][0] = sideprofil1[c][0] + 70
+  }
+  
   sideprofiler.push(sideprofil1)
   sideprofiler.push(sideprofil3)
   sideprofiler.push(sideprofil2)
-  console.log(sideprofiler[0])
+
+  isCollision(sideprofiler[0], profilVogn);
+  
+
   for(i in sideprofiler){
       tal = parseInt(i)
       sideprofiler[i] = convertProfil(sideprofiler[i])
   }
+
   if(svg.childElementCount > 6){
     svg.removeChild(svg.lastChild)
   }
@@ -328,6 +420,14 @@ function useRute2(){
     let points = "";
     for(i in profil){
       points += profil[i] + " "
+    }
+    return points;
+  }
+
+  function convertProfil1(profil){
+    let points = "";
+    for(i in profil){
+      points += profil[i][0] + 70 + "," + profil[i][1] + " "
     }
     return points;
   }

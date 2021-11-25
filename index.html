@@ -70,27 +70,37 @@
     </section>
 
     <section class="sektion 2">
-        <div class="billedeprofil">
-            <h2>indsæt grafisk profil</h2>
-            <div class="downsektion1">
+        <div class="graphicProfileOnly">
+            <h2>Profilvogn</h2>
+            <div class="svgSektion">
                 <svg xmlns="http://www.w3.org/2000/svg" id="mysvgProfileOnly" viewBox="0 0 500 500" preserveAspectRatio="xMidYmid meet">
                     <line x1="250" y1="0" x2="250" y2="500" style="stroke: rgb(139, 139, 139); stroke-dasharray: 10 10;"></line>
                     <line x1="0" y1="420" x2="500" y2="420" style="stroke: rgb(51, 51, 51); stroke-dasharray: 6 10;"></line>
                     <line x1="150" y1="405" x2="350" y2="405" style="stroke: rgb(253, 145, 145); stroke-dasharray: 6 10;"></line>
                 </svg>
             </div>
+            <div id="output">
+                <strong id="strong">SVG Coordinates:</strong> <span id="svgX"></span> <span id="svgY"></span>
+            </div>
         </div>
     </section>
 
     <section class="sektion 3">
         <div>
-            <div class="billedetegneprofil">
-                <h2> indsæt tegnebræt</h2>
-                <img src="tegneprofil.png" alt="">
+            <div class="graphicDrawProfile">
+                <h2> Tegn profil</h2>
+                <div class="svgSektion">
+                    <svg xmlns="http://www.w3.org/2000/svg" id="mysvgDrawProfile" viewBox="0 0 500 500" preserveAspectRatio="xMidYmid meet">
+                        <line x1="250" y1="0" x2="250" y2="500" style="stroke: rgb(139, 139, 139); stroke-dasharray: 10 10;"></line>
+                        <line x1="0" y1="420" x2="500" y2="420" style="stroke: rgb(51, 51, 51); stroke-dasharray: 6 10;"></line>
+                        <line x1="150" y1="405" x2="350" y2="405" style="stroke: rgb(253, 145, 145); stroke-dasharray: 6 10;"></line>
+                    </svg>
+                </div>
             </div>
-            <div class="knap">
-                <button>tegn</button>
-                <button>slet</button>
+            <div class="btnSvgDrawButtons">
+                <button type="button" id="btnBeginDraw">start profil</button>
+                <button type="button" id="btnEndDraw">afslut profil</button>
+                <button type="button" id="btnErase">slet</button>
             </div>
         </div>
     </section>
@@ -209,19 +219,16 @@
         </div>
     </section>
     <section class="sektion 5">
-        <div class="downsektion2">
-            <h1>Grafisk profil</h1>
-            <h1 id="ruteOvertextHøjre">sideprofil</h1>
+        <div class="headline">
+            <h1>Profilvogn</h1>
+            <h1 id="RouteHeadlineRight">ingen rute valgt</h1>
         </div> 
-        <div class="downsektion1">
+        <div class="svgSektion">
             <svg xmlns="http://www.w3.org/2000/svg" id="mysvg" viewBox="0 0 500 500" preserveAspectRatio="xMidYmid meet">
                 <line x1="250" y1="0" x2="250" y2="500" style="stroke: rgb(139, 139, 139); stroke-dasharray: 10 10;"></line>
                 <line x1="0" y1="420" x2="500" y2="420" style="stroke: rgb(51, 51, 51); stroke-dasharray: 6 10;"></line>
                 <line x1="150" y1="405" x2="350" y2="405" style="stroke: rgb(253, 145, 145); stroke-dasharray: 6 10;"></line>
             </svg>
-        </div>
-        <div id="output">
-            <strong id="strong">SVG Coordinates:</strong> <span id="svgX"></span> <span id="svgY"></span>
         </div>
     </section>
 
