@@ -244,8 +244,14 @@ svgY.value = svgP.y;
 svgXTextContent = isNaN(svgX.value) ? svgX.value : Math.round(svgX.value);
 svgYTextContent = isNaN(svgY.value) ? svgY.value : Math.round(svgY.value);
 
-svgX.textContent = "X: " + svgXTextContent
+
+var box = svg.viewBox.baseVal
+svgYTextContent = Math.abs(svgYTextContent - box.height)
+svgXTextContent = svgXTextContent - box.height/2
+
 svgY.textContent = "Y: " + svgYTextContent
+svgX.textContent = "X: " + svgXTextContent
+//console.log(box)
 }
 
 
@@ -265,9 +271,7 @@ function displayProfil(){
   asymmetriskProfil = convertToSymmetric(profilVogn)
   asymmetriskProfilOriginal = convertProfil(profilVogn)
 
-  if(svg.childElementCount > 3){
-    svg.removeChild(svg.lastChild)
-  } else{
+  if(svg.childElementCount == 3){ //3 lines (children) under viewbox. Add 3 profiles as children. 
     drawProfile(asymmetriskProfilOriginal, "shadowProfil", svg)
     drawProfile(asymmetriskProfil, "shadowProfil", svg)
     drawProfile(convertedProfil, "profil", svg)
@@ -275,29 +279,27 @@ function displayProfil(){
     drawProfile(asymmetriskProfilOriginal, "shadowProfil", svgProfileOnly)
     drawProfile(asymmetriskProfil, "shadowProfil", svgProfileOnly)
     drawProfile(convertedProfil, "profil", svgProfileOnly)
-  }
+  } 
 }
 
 function displayNextSideprofile(){
-  if(svg.childElementCount > 4){
-    svg.removeChild(svg.lastChild)
-  }
-
   if(sideprofiler.length > 0){
-    if(!(sideprofilIndex +1 > sideprofiler.length)){
-      sideprofilIndex ++;
-      drawProfile(sideprofiler[sideprofilIndex], "sideprofil", svg)
+    if(sideprofilIndex +2 <= sideprofiler.length){
+        if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements.
+            svg.removeChild(svg.lastChild)
+        }
+        sideprofilIndex ++;
+        drawProfile(sideprofiler[sideprofilIndex], "sideprofil", svg)
     }
   }
 }
 
 function displaypreviousSideprofile(){
-  if(svg.childElementCount > 4){
-    svg.removeChild(svg.lastChild)
-  }
-
   if(sideprofiler.length > 0){
     if(!(sideprofilIndex -1 == -1)){
+      if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements.
+        svg.removeChild(svg.lastChild)
+      }
       sideprofilIndex --;
       drawProfile(sideprofiler[sideprofilIndex], "sideprofil", svg)
     }
@@ -305,7 +307,7 @@ function displaypreviousSideprofile(){
 }
 
 function displayFirstSideprofile(){
-  if(svg.childElementCount > 4){
+  if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements.
     svg.removeChild(svg.lastChild)
   }
 
@@ -316,12 +318,12 @@ function displayFirstSideprofile(){
 }
 
 function displayLastSideprofile(){
-  if(svg.childElementCount > 4){
+  if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements.
     svg.removeChild(svg.lastChild)
   }
 
   if(sideprofiler.length > 0){
-      sideprofilIndex = sideprofiler.length;
+      sideprofilIndex = sideprofiler.length -1;
       drawProfile(sideprofiler[sideprofiler.length -1], "sideprofil", svg)
   }
 }
@@ -367,7 +369,7 @@ function chooseRoute(){
     }
   }
   else{
-    console.log("mangler at indsætte profil")
+    RouteHeadlineRight.innerHTML = "mangler at indsætte profil"
   }
 }
 
