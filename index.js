@@ -1,78 +1,6 @@
 //Lave X&Y map 
 const items = new Array(20).fill(0).map(() => new Array(20).fill(0));
 
-//Oprette profil. For at det fungere skal Y indsættes først i forhold til 2d array 
-const profil = [
-    [2,15],[3,15],[4,15],[5,15],[6,15],
-    [6,16],[6,17],
-    [7,17],[8,17],[9,17],
-    [9,16],[9,15],[9,14],
-    [10,14],[11,14],[12,14],[13,14],[14,14],
-    [14,13],[14,12],[14,11]
-
-]
-
-//oprette sideprofil. For at det fungere skal Y indsættes først i forhold til 2d array
-const sideprofil = [
-    [0,16],
-    [1,16],
-    [2,16],
-    [3,16],
-    [4,16],
-    [5,16],
-    [6,16],
-    [7,16],
-    [8,16],
-    [9,16],
-    [10,16],
-    [11,16],
-    [12,16],
-    [13,16],
-    [14,16],[14,15],[14,14],[14,13],[14,12],
-    [13,12], 
-    [12,12],[12,13],[12,14],[12,15]
-]
-
-const test = 0; 
-
-//Sætte sideprofil ind. 
-/*
-for(a = 0; a < sideprofil.length; a++){
-    items[sideprofil[a][0]][sideprofil[a][1]] = 2
-}
-*/
-
-/*
-function simulerStrækning(){
-    for(a = 0; a < sideprofil.length; a++){
-        if(items[sideprofil[a][0]][sideprofil[a][1]] == 1){
-            console.log("De støder på hinanden")
-            h2.innerHTML = "Sideprofil støder på profil"
-            console.log(sideprofil[a][0] + ", " + sideprofil[a][1])
-            break;
-        }
-    }
-}
-*/
-
-/*indlæsKnap.onclick = function(){
-    //Sætte profil ind i koordinatsystemet. Hvis 0 så er der ingen genstand, hvis 1 så er der en genstand.
-    for(a = 0; a < profil.length; a++){
-        items[profil[a][0]][profil[a][1]] = 1
-    }
-}
-*/
-
-/*knap.onclick = function(){
-    for(i = 0; i < array.length; i++){
-        if(array[i].checked == true){
-            console.log(items.reverse())
-            simulerStrækning();
-        }
-    }
-}
-*/
-
 //----------SVG---------------------------------
 // initialize
 const svg = document.getElementById('mysvg')
@@ -81,8 +9,9 @@ const svgDrawProfile = document.getElementById('mysvgDrawProfile')
 
 const NS = svg.getAttribute('xmlns')
 
-const btnProfil = document.getElementById('btnIndlæsknap')
-const btnSimuler = document.getElementById('btnSimuler')
+let btnProfil = document.getElementById('btnIndlæsknap')
+let btnUseDrawProfile = document.getElementById('btnUseDrawProfile')
+let btnSimuler = document.getElementById('btnSimuler')
 
 let rute1 = document.getElementById("rute1");
 let rute2 = document.getElementById("rute2");
@@ -96,6 +25,7 @@ let btnNextAll = document.getElementById("btnNextAll")
 let btnBeginDraw = document.getElementById('btnBeginDraw')
 let btnEndDraw = document.getElementById('btnEndDraw')
 let btnErase = document.getElementById('btnErase')
+let btnSave = document.getElementById('btnSave')
 
 let svgX = document.getElementById("svgX");
 let svgY = document.getElementById("svgY");
@@ -108,14 +38,15 @@ sideprofiler = []
 sideprofilIndex = 0;
 
 // events
-svgDrawProfile.addEventListener('pointerdown', createCircle)
+svgDrawProfile.addEventListener('pointerdown', drawPointInProfile)
 btnErase.addEventListener('click', removeLastPoint)
 btnBeginDraw.addEventListener('click', beginDraw)
 btnEndDraw.addEventListener('click', endDraw)
 
 svgProfileOnly.addEventListener('pointermove', getCoordinates)
 
-btnProfil.addEventListener('click', displayProfil)
+btnProfil.addEventListener('click', chooseProfile)
+btnUseDrawProfile.addEventListener('click', chooseProfile)
 btnSimuler.addEventListener('click', chooseRoute)
 
 btnNext1.addEventListener('click', displayNextSideprofile)
@@ -128,15 +59,16 @@ btnNextAll.addEventListener('click', displayLastSideprofile)
 //profils
 let opretProfilVogn = []
 let draw = false
+let isProfileCreated = false
 
 const profilVogn = [
-  [250,400],[300,400],
-  [300, 300], [330, 300],
-  [330, 270], [300,270],
-  [300, 240], [200,240],
-  [200, 270], [150, 270],
-  [150, 340], [200, 340],
-  [200, 400], [250,400]
+  [1000,1600],[1200,1600],
+  [1200, 1200], [1320, 1200],
+  [1320, 1080], [1200,1080],
+  [1200, 960], [800,960],
+  [800, 1080], [600, 1080],
+  [600, 1360], [800, 1360],
+  [800, 1600], [1000,1600]
 ]
 
 const sideprofil1 = [
@@ -173,12 +105,11 @@ function beginDraw(){
 
 function endDraw(){
   draw = false;
-  if(svgDrawProfile.childElementCount > 3){
+  if(svgDrawProfile.childElementCount > 3){ // 3 lines (children) in viewbox. The 4th element would be the profile line. 
     svgDrawProfile.removeChild(svgDrawProfile.lastChild)
-    console.log("er det den første?: " + opretProfilVogn[0])
-    opretProfilVogn.push(opretProfilVogn[0])
-    ny = convertProfil(opretProfilVogn);
-    lineOfProfil.setAttribute("points" , ny);
+    opretProfilVogn.push(opretProfilVogn[0]) //Ending the profile by adding the coordinates as the last coordinates. 
+    finaleProfile = convertProfilToSvgFormat(opretProfilVogn);
+    lineOfProfil.setAttribute("points" , finaleProfile);
     lineOfProfil.setAttribute("stroke", "black");
     lineOfProfil.setAttribute("fill", "none");
     lineOfProfil.setAttribute('id', "testID")
@@ -187,11 +118,11 @@ function endDraw(){
 }
 
 function removeLastPoint (){
-  if(svgDrawProfile.childElementCount > 3){
+  if(svgDrawProfile.childElementCount > 3){ // 3 lines (children) in viewbox. The 4th element would be the profile line. 
     svgDrawProfile.removeChild(svgDrawProfile.lastChild)
     opretProfilVogn.pop()
-    ny = convertProfil(opretProfilVogn);
-    lineOfProfil.setAttribute("points" , ny);
+    finaleProfile = convertProfilToSvgFormat(opretProfilVogn);
+    lineOfProfil.setAttribute("points" , finaleProfile);
     lineOfProfil.setAttribute("stroke", "black");
     lineOfProfil.setAttribute("fill", "none");
     lineOfProfil.setAttribute('id', "testID")
@@ -200,7 +131,7 @@ function removeLastPoint (){
 }
 
 // add a circle to the target
-function createCircle(event) {
+function drawPointInProfile(event) {
 if(draw){
 
   // add circle to containing element
@@ -213,24 +144,18 @@ if(draw){
 
   lineOfProfil = document.createElementNS(NS, 'polyline')
 
-  if(svgDrawProfile.childElementCount > 3){
+  if(svgDrawProfile.childElementCount > 3){ // 3 lines (children) in viewbox. The 4th element would be the profile line.
     svgDrawProfile.removeChild(svgDrawProfile.lastChild)
   }
 
   opretProfilVogn.push([cX,cY])
-
-  ny = convertProfil(opretProfilVogn);
+  
+  finaleProfile = convertProfilToSvgFormat(opretProfilVogn);
     
-  lineOfProfil.setAttribute("points" , ny);
+  lineOfProfil.setAttribute("points" , finaleProfile);
   lineOfProfil.setAttribute("stroke", "black");
   lineOfProfil.setAttribute("fill", "none");
   lineOfProfil.setAttribute('id', "testID")
-
-  /*
-  circle.setAttribute("points" , points);
-  circle.setAttribute("stroke", "black");
-  circle.setAttribute("fill", "none");
-  */
 
   svgDrawProfile.appendChild(lineOfProfil);
   }
@@ -244,15 +169,18 @@ svgY.value = svgP.y;
 svgXTextContent = isNaN(svgX.value) ? svgX.value : Math.round(svgX.value);
 svgYTextContent = isNaN(svgY.value) ? svgY.value : Math.round(svgY.value);
 
-
-var box = svg.viewBox.baseVal
-svgYTextContent = Math.abs(svgYTextContent - box.height)
-svgXTextContent = svgXTextContent - box.height/2
-
 svgY.textContent = "Y: " + svgYTextContent
 svgX.textContent = "X: " + svgXTextContent
-//console.log(box)
 }
+
+// Hvis tid kan der bygges videre på denne funktion. 
+/*
+function convertFromSvgToProfileCoordinates(){
+  var box = svg.viewBox.baseVal
+  svgYTextContent = Math.abs(svgYTextContent - box.height)
+  svgXTextContent = svgXTextContent - box.height/2
+}
+*/
 
 
 // translate page to SVG co-ordinate
@@ -264,21 +192,65 @@ function svgPoint(element, x, y) {
   return pt.matrixTransform(element.getScreenCTM().inverse()); //Fra svg units til screen coordinater. X&Y egenskaber som giver koordinater på svg viewbox.
 }
 
-function displayProfil(){
+function chooseProfile(){
+  if(this.id == "btnIndlæsknap"){
+    displayProfil(profilVogn, this.id)
+  }
+  if(this.id == "btnUseDrawProfile"){
+    if(opretProfilVogn.length == 0){
+      RouteHeadlineRight.innerHTML = "profil er tom"
+    }
+    else{
+      displayProfil(opretProfilVogn, this.id)
+    }
+  }
+}
 
-  convertedProfil = convertProfil(profilVogn)
+function displayProfil(profilVogn, id){
 
+  convertedProfil = convertProfilToSvgFormat(profilVogn)
   asymmetriskProfil = convertToSymmetric(profilVogn)
-  asymmetriskProfilOriginal = convertProfil(profilVogn)
+  asymmetriskProfilOriginal = convertProfilToSvgFormat(profilVogn)
 
+  for(i = 0; i < svg.childElementCount; i++){
+    let child = svg.children[i]
+    if(child.id == "btnIndlæsknap"){
+      console.log("demoprofil")
+  
+      newProfile = drawProfile(convertedProfil, id)
+      newProfile1 = drawShadowProfile(asymmetriskProfilOriginal, "shadowProfil1")
+      newProfile2 = drawShadowProfile(asymmetriskProfil, "shadowProfil2")
+      svg.appendChild(newProfile)
+      svg.appendChild(newProfile1)
+      svg.appendChild(newProfile2)
+      svg.replaceChild(newProfile,child)
+      svg.replaceChild(newProfile1,svg.children[i-2])
+      svg.replaceChild(newProfile2,svg.children[i-1])
+    }
+    if(child.id == "btnUseDrawProfile"){
+      console.log("demoprofil1")
+      newProfile = drawProfile(convertedProfil, id)
+      svg.appendChild(newProfile)
+      svg.replaceChild(newProfile,child)
+    }
+  }
+ 
   if(svg.childElementCount == 3){ //3 lines (children) under viewbox. Add 3 profiles as children. 
-    drawProfile(asymmetriskProfilOriginal, "shadowProfil", svg)
-    drawProfile(asymmetriskProfil, "shadowProfil", svg)
-    drawProfile(convertedProfil, "profil", svg)
+    newProfile1 = drawShadowProfile(asymmetriskProfilOriginal, "shadowProfil1")
+    newProfile2 = drawShadowProfile(asymmetriskProfil, "shadowProfil2")
+    newProfile3 = drawProfile(convertedProfil, id)
 
-    drawProfile(asymmetriskProfilOriginal, "shadowProfil", svgProfileOnly)
-    drawProfile(asymmetriskProfil, "shadowProfil", svgProfileOnly)
-    drawProfile(convertedProfil, "profil", svgProfileOnly)
+    svg.appendChild(newProfile1)
+    svg.appendChild(newProfile2)
+    svg.appendChild(newProfile3)
+
+    newProfile1 = drawShadowProfile(asymmetriskProfilOriginal, "shadowProfil1")
+    newProfile2 = drawShadowProfile(asymmetriskProfil, "shadowProfil2")
+    newProfile3 = drawProfile(convertedProfil, "profil")
+
+    svgProfileOnly.appendChild(newProfile1)
+    svgProfileOnly.appendChild(newProfile2)
+    svgProfileOnly.appendChild(newProfile3)
   } 
 }
 
@@ -289,7 +261,8 @@ function displayNextSideprofile(){
             svg.removeChild(svg.lastChild)
         }
         sideprofilIndex ++;
-        drawProfile(sideprofiler[sideprofilIndex], "sideprofil", svg)
+        newProfile = drawProfile(sideprofiler[sideprofilIndex], "sideprofil")
+        svg.appendChild(newProfile)
     }
   }
 }
@@ -301,7 +274,8 @@ function displaypreviousSideprofile(){
         svg.removeChild(svg.lastChild)
       }
       sideprofilIndex --;
-      drawProfile(sideprofiler[sideprofilIndex], "sideprofil", svg)
+      newProfile = drawProfile(sideprofiler[sideprofilIndex], "sideprofil")
+      svg.appendChild(newProfile)
     }
   }
 }
@@ -313,7 +287,8 @@ function displayFirstSideprofile(){
 
   if(sideprofiler.length > 0){
       sideprofilIndex = 0;
-      drawProfile(sideprofiler[0], "sideprofil", svg)
+      newProfile = drawProfile(sideprofiler[0], "sideprofil")
+      svg.appendChild(newProfile)
   }
 }
 
@@ -324,7 +299,8 @@ function displayLastSideprofile(){
 
   if(sideprofiler.length > 0){
       sideprofilIndex = sideprofiler.length -1;
-      drawProfile(sideprofiler[sideprofiler.length -1], "sideprofil", svg)
+      newProfile = drawProfile(sideprofiler[sideprofiler.length -1], "sideprofil")
+      svg.appendChild(newProfile)
   }
 }
 
@@ -333,9 +309,8 @@ function isCollision(sideprofil, profil){
     if(i + 2 <= profil.length){
       for(a = 0; a < sideprofil.length; a++){
         if(a +2 <= sideprofil.length){
-          //console.log("a,v,v,fe,de,,: " + sideprofil[a][0]+ " " + sideprofil[a][1] + " " + sideprofil[a+1][0] + " " + sideprofil[a+1][1])
           if(isPointInPoly(sideprofil[a][0],sideprofil[a][1], sideprofil[a+1][0], sideprofil[a+1][1], profil[i][0], profil[i][1], profil[i +1][0], profil[i+1][1])){
-            console.log("Der er ingen collision")
+            console.log("Der er sammenstød")
           }
         }
       }
@@ -344,7 +319,6 @@ function isCollision(sideprofil, profil){
 }
 
 function isPointInPoly(a,b,c,d,p,q,r,s) {
-  //console.log("a,b,c,d,e,f,g,h:" +a+" "+b+" "+c+" "+d+" "+p+" "+q+" "+r+" "+s)
   var det, gamma, lambda;
   det = (c - a) * (s - q) - (r - p) * (d - b);
   if (det === 0) {
@@ -357,7 +331,7 @@ function isPointInPoly(a,b,c,d,p,q,r,s) {
 };
 
 function chooseRoute(){
-  if(svg.childElementCount > 3){
+  if(svg.childElementCount > 3){ // 3 lines from start under viewbox. Vi need to add profile before we can simulate a route. 
     if(rute1.checked){
       useRute1()
       RouteHeadlineRight.innerHTML = "Rute1"
@@ -379,22 +353,22 @@ function useRute1(){
     sideprofiler.push(sideprofil1)
     sideprofiler.push(sideprofil2)
     sideprofiler.push(sideprofil3)
-    console.log(sideprofiler[0])
     for(i in sideprofiler){
-        console.log("I er; " + typeof(i))
         tal = parseInt(i)
-        sideprofiler[i] = convertProfil(sideprofiler[i])
+        sideprofiler[i] = convertProfilToSvgFormat(sideprofiler[i])
     }
-    if(svg.childElementCount > 4){
+    if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements. We need to remove wayside object(element 7) if we change new route
       svg.removeChild(svg.lastChild)
     }
-    drawProfile(sideprofiler[0], "sideprofil", svg)
+    newProfile = drawProfile(sideprofiler[0], "sideprofil")
+    svg.appendChild(newProfile)
 }
 
 function useRute2(){
   sideprofiler = []
   sideprofilIndex = 0
   
+  //Bare for at rykke profilen for at se om der er sammenstød
   for(c = 0; c < sideprofil1.length; c++){
     sideprofil1[c][0] = sideprofil1[c][0] + 70
   }
@@ -405,20 +379,20 @@ function useRute2(){
 
   isCollision(sideprofiler[0], profilVogn);
   
-
   for(i in sideprofiler){
       tal = parseInt(i)
-      sideprofiler[i] = convertProfil(sideprofiler[i])
+      sideprofiler[i] = convertProfilToSvgFormat(sideprofiler[i])
   }
 
-  if(svg.childElementCount > 6){
+  if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements. We need to remove wayside object(element 7) if we change new route
     svg.removeChild(svg.lastChild)
   }
-  drawProfile(sideprofiler[0], "sideprofil", svg)
+  newProfile = drawProfile(sideprofiler[0], "sideprofil")
+  svg.appendChild(newProfile)
 }
 
 
-  function convertProfil(profil){
+  function convertProfilToSvgFormat(profil){
     let points = "";
     for(i in profil){
       points += profil[i] + " "
@@ -426,25 +400,18 @@ function useRute2(){
     return points;
   }
 
-  function convertProfil1(profil){
-    let points = "";
-    for(i in profil){
-      points += profil[i][0] + 70 + "," + profil[i][1] + " "
-    }
-    return points;
-  }
-
   function convertToSymmetric(profil){
     let points = ""; 
+    var box = svg.viewBox.baseVal
     
     for(i in profil){
-      if(profil[i][0] - 250 >= 0){
-        let testX = profil[i][0] - (profil[i][0] - 250) * 2
-        points += testX + ", " + profil[i][1] + " "
+      if(profil[i][0] - box.width/2 >= 0){
+        let newX = profil[i][0] - (profil[i][0] - box.width/2) * 2
+        points +=newX + ", " + profil[i][1] + " "
       }
       else{
-        let testY = profil[i][0] + (Math.abs(profil[i][0] - 250)) * 2
-        points += testY + ", " + profil[i][1] + " "
+        let newY = profil[i][0] + (Math.abs(profil[i][0] - box.width/2)) * 2
+        points += newY + ", " + profil[i][1] + " "
       }
     }
 
@@ -455,20 +422,25 @@ function useRute2(){
     return points;
   }
 
-  function drawProfile(convertedProfil, profilID, svgPlatform){
+  function drawProfile(convertedProfil, profilID){
     lineOfProfil = document.createElementNS(NS, 'polyline')
     
     lineOfProfil.setAttribute("points" , convertedProfil);
     lineOfProfil.setAttribute("stroke", "black");
     lineOfProfil.setAttribute('id', profilID)
-    if(profilID != "shadowProfil")
-    {
-    }
-    if(profilID == "shadowProfil"){
-      lineOfProfil.setAttribute('stroke-opacity', '.001')
-      lineOfProfil.setAttribute('fill', 'rgb(218, 218, 218)')
-    }else{
-      lineOfProfil.setAttribute('fill', 'none')
-    }
-    svgPlatform.appendChild(lineOfProfil);
+    lineOfProfil.setAttribute('fill', 'none')
+
+    return lineOfProfil
+  }
+
+  function drawShadowProfile(convertedProfil, profilID){
+    lineOfProfil = document.createElementNS(NS, 'polyline')
+    
+    lineOfProfil.setAttribute("points" , convertedProfil);
+    lineOfProfil.setAttribute("stroke", "black");
+    lineOfProfil.setAttribute('id', profilID)
+    lineOfProfil.setAttribute('stroke-opacity', '.001')
+    lineOfProfil.setAttribute('fill', 'rgb(218, 218, 218)')
+
+    return lineOfProfil
   }

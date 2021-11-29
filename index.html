@@ -73,10 +73,10 @@
         <div class="graphicProfileOnly">
             <h2>Profilvogn</h2>
             <div class="svgSektion">
-                <svg xmlns="http://www.w3.org/2000/svg" id="mysvgProfileOnly" viewBox="0 0 500 500" preserveAspectRatio="xMidYmid meet">
-                    <line x1="250" y1="0" x2="250" y2="500" style="stroke: rgb(139, 139, 139); stroke-dasharray: 10 10;"></line>
-                    <line x1="0" y1="420" x2="500" y2="420" style="stroke: rgb(51, 51, 51); stroke-dasharray: 6 10;"></line>
-                    <line x1="150" y1="405" x2="350" y2="405" style="stroke: rgb(253, 145, 145); stroke-dasharray: 6 10;"></line>
+                <svg xmlns="http://www.w3.org/2000/svg" id="mysvgProfileOnly" viewBox="0 0 2000 2000" preserveAspectRatio="xMidYmid meet">
+                    <line x1="1000" y1="0" x2="1000" y2="2000" style="stroke: rgb(7, 7, 7); stroke-dasharray: 40 40;"></line>
+                    <line x1="0" y1="1680" x2="2000" y2="1680" style="stroke: rgb(20, 20, 20); stroke-dasharray: 40 40;"></line>
+                    <line x1="655" y1="1620" x2="1400" y2="1620" style="stroke: rgb(87, 8, 8); stroke-dasharray: 40 40;"></line>
                 </svg>
             </div>
             <div id="output">
@@ -90,10 +90,10 @@
             <div class="graphicDrawProfile">
                 <h2> Tegn profil</h2>
                 <div class="svgSektion">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="mysvgDrawProfile" viewBox="0 0 500 500" preserveAspectRatio="xMidYmid meet">
-                        <line x1="250" y1="0" x2="250" y2="500" style="stroke: rgb(139, 139, 139); stroke-dasharray: 10 10;"></line>
-                        <line x1="0" y1="420" x2="500" y2="420" style="stroke: rgb(51, 51, 51); stroke-dasharray: 6 10;"></line>
-                        <line x1="150" y1="405" x2="350" y2="405" style="stroke: rgb(253, 145, 145); stroke-dasharray: 6 10;"></line>
+                    <svg xmlns="http://www.w3.org/2000/svg" id="mysvgDrawProfile" viewBox="0 0 2000 2000" preserveAspectRatio="xMidYmid meet">
+                        <line x1="1000" y1="0" x2="1000" y2="2000" style="stroke: rgb(7, 7, 7); stroke-dasharray: 40 40;"></line>
+                        <line x1="0" y1="1680" x2="2000" y2="1680" style="stroke: rgb(20, 20, 20); stroke-dasharray: 40 40;"></line>
+                        <line x1="655" y1="1620" x2="1400" y2="1620" style="stroke: rgb(87, 8, 8); stroke-dasharray: 40 40;"></line>
                     </svg>
                 </div>
             </div>
@@ -101,6 +101,7 @@
                 <button type="button" id="btnBeginDraw">start profil</button>
                 <button type="button" id="btnEndDraw">afslut profil</button>
                 <button type="button" id="btnErase">slet</button>
+                <button type="button" id="btnSave">gem</button>
             </div>
         </div>
     </section>
@@ -224,10 +225,10 @@
             <h1 id="RouteHeadlineRight">ingen rute valgt</h1>
         </div> 
         <div class="svgSektion">
-            <svg xmlns="http://www.w3.org/2000/svg" id="mysvg" viewBox="0 0 500 500" preserveAspectRatio="xMidYmid meet">
-                <line x1="250" y1="0" x2="250" y2="500" style="stroke: rgb(139, 139, 139); stroke-dasharray: 10 10;"></line>
-                <line x1="0" y1="420" x2="500" y2="420" style="stroke: rgb(51, 51, 51); stroke-dasharray: 6 10;"></line>
-                <line x1="150" y1="405" x2="350" y2="405" style="stroke: rgb(253, 145, 145); stroke-dasharray: 6 10;"></line>
+            <svg xmlns="http://www.w3.org/2000/svg" id="mysvg" viewBox="0 0 2000 2000" preserveAspectRatio="xMidYmid meet">
+                <line x1="1000" y1="0" x2="1000" y2="2000" style="stroke: rgb(7, 7, 7); stroke-dasharray: 40 40;"></line>
+                <line x1="0" y1="1680" x2="2000" y2="1680" style="stroke: rgb(20, 20, 20); stroke-dasharray: 40 40;"></line>
+                <line x1="655" y1="1620" x2="1400" y2="1620" style="stroke: rgb(87, 8, 8); stroke-dasharray: 40 40;" id="Har du id?"></line>
             </svg>
         </div>
     </section>
@@ -277,52 +278,26 @@
                             <input type="radio">
                             <label for=""> Sporafstand</label>
                         </div>
-                    </div>
-
-                    <div class="scrolling">
+                    </div> 
+                    <div class="testklasse">
                         <div>
-                            <label for="">Standard profil</label>
+                            <label for="">Inlæs profil og rute</label>
                         </div>
                         <div>
-                            <select name="" id="scroll"></select>
+                            <label for="">Indlæs profil</label>
+                            <button type="button" id="btnIndlæsknap"> Indlæs demoprofil</button>
+                            <button type="button" id="btnUseDrawProfile"> Indlæs tegnede profil</button>
+                        </div>
+                        <div>
+                            <input type="radio" name="navn1" id="rute1"> Rute1
+                            <input type="radio" name="navn1" id="rute2"> Rute2
+                        </div>
+                        <div>
+                            <button type="button" id="btnSimuler">Simuler rute</button>
                         </div>
                     </div>
-
-                    <div class="outline2">
-                        <div class="outline3">
-                            <button type="button" id="knap">Klik her!</button>
-                            <button type="button" id="standard2">STOP</button>
-                        </div>
-                    </div>
-
-                    <div class="outline2">
-                        <div class="outline">
-                            <label for="">Strækning</label>
-                        </div>
-                        <div class="outline">
-                            <label for="" id="signaltext"> signal 316-3 i km 1,50 (M1 km -0,848)</label>
-                        </div>
-                    </div>
-                    
                 </div>
             </form>
-        </div>
-
-        <div class="testklasse">
-            <div>
-                <label for="">Teststykke for valg af ruter</label>
-            </div>
-            <div>
-                <label for="">Indlæs profil</label>
-                <button type="button" id="btnIndlæsknap"> Indlæs</button>
-            </div>
-            <div>
-                <input type="radio" name="navn1" id="rute1"> Rute1
-                <input type="radio" name="navn1" id="rute2"> Rute2
-            </div>
-            <div>
-                <button type="button" id="btnSimuler">Simuler rute</button>
-            </div>
         </div>
     </section>
 </body>
