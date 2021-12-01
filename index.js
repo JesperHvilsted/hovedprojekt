@@ -62,6 +62,10 @@ let opretProfilVognForSvg = []
 let draw = false
 let isProfileCreated = false
 
+let displayProfile = []
+let displayProfileShadow = []
+let displayProfileFullspeed = []
+
 const profilVogn1 = [
   [1000,1600],[1200,1600],
   [1200, 1200], [1320, 1200],
@@ -80,10 +84,10 @@ const profilVogn = [
 ]
 
 const sideprofil1 = [
-  [400, 1610], [400, 400],
-  [640, 400], [760, 480],
-  [800, 520], [800, 600],
-  [760, 720], [400, 760]
+  [570, 1780], [570, 570],
+  [810, 570], [930, 650],
+  [970, 690], [970, 770],
+  [930, 890], [570, 930]
 ]
 
 const sideprofil2 = [
@@ -249,70 +253,76 @@ function displayProfil(profilVogn, id){
 
   fullSpeedProfile = fullSpeed(profilVogn)
 
-  enTesterConverted = convertProfilToSvgFormat(fullSpeedProfile)
-  convertedProfil = convertProfilToSvgFormat(profilVogn)
-  asymmetriskProfil = convertToSymmetricSvg(profilVogn)
+  displayProfile = profilVogn 
+  displayeProfileConverted = convertProfilToSvgFormat(profilVogn)
+  displayProfileShadow = convertToSymmetricSvg(profilVogn)
+  displayProfileFullspeed = convertProfilToSvgFormat(fullSpeedProfile)
 
   for(i = 0; i < svg.childElementCount; i++){
     let child = svg.children[i]
     if(child.id == "btnIndlæsknap"){
   
-      newProfile = drawProfile(convertedProfil, id)
-      newProfile2 = drawShadowProfile(asymmetriskProfil, "shadowProfil2")
+      newProfile = drawProfile(displayeProfileConverted, id)
+      newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil2")
+      fullSpeedTest = drawProfile(displayProfileFullspeed, "5km for stærkt")
 
       svg.appendChild(newProfile)
       svg.appendChild(newProfile2)
+      svg.appendChild(fullSpeedTest)
 
       svg.replaceChild(newProfile,child)
-      svg.replaceChild(newProfile2,svg.children[i-1])
+      svg.replaceChild(newProfile2,svg.children[i +1])
+      svg.replaceChild(fullSpeedTest,svg.children[i+2])
 
-      newProfile = drawProfile(convertedProfil, id)
-      newProfile2 = drawShadowProfile(asymmetriskProfil, "shadowProfil2")
+      newProfile = drawProfile(displayeProfileConverted, id)
+      newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil2")
 
       svgProfileOnly.appendChild(newProfile)
       svgProfileOnly.appendChild(newProfile2)
 
       svgProfileOnly.replaceChild(newProfile,svgProfileOnly.children[i])
-      svgProfileOnly.replaceChild(newProfile2,svgProfileOnly.children[i-1])
+      svgProfileOnly.replaceChild(newProfile2,svgProfileOnly.children[i +1])
 
     }
     if(child.id == "btnUseDrawProfile"){
 
-      newProfile = drawProfile(convertedProfil, id)
-      newProfile2 = drawShadowProfile(asymmetriskProfil, "shadowProfil2")
+      newProfile = drawProfile(displayeProfileConverted, id)
+      newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil2")
+      fullSpeedTest = drawProfile(displayProfileFullspeed, "5km for stærkt")
 
       svg.appendChild(newProfile)
       svg.appendChild(newProfile2)
+      svg.appendChild(fullSpeedTest)
 
       svg.replaceChild(newProfile,child)
-      svg.replaceChild(newProfile2,svg.children[i-1])
+      svg.replaceChild(newProfile2,svg.children[i+1])
+      svg.replaceChild(fullSpeedTest,svg.children[i+2])
 
-      newProfile = drawProfile(convertedProfil, id)
-      newProfile2 = drawShadowProfile(asymmetriskProfil, "shadowProfil2")
+      newProfile = drawProfile(displayeProfileConverted, id)
+      newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil2")
 
       svgProfileOnly.appendChild(newProfile)
       svgProfileOnly.appendChild(newProfile2)
 
       svgProfileOnly.replaceChild(newProfile,svgProfileOnly.children[i])
-      svgProfileOnly.replaceChild(newProfile2,svgProfileOnly.children[i-1])
-
+      svgProfileOnly.replaceChild(newProfile2,svgProfileOnly.children[i+1])
     }
   }
  
-  if(svg.childElementCount == 3){ //3 lines (children) under viewbox. Add 2 profiles as children. 
-    newProfile1 = drawShadowProfile(asymmetriskProfil, "shadowProfil1")
-    newProfile3 = drawProfile(convertedProfil, id)
-    fullSpeedTest = drawProfile(enTesterConverted, "5km for stærkt")
+  if(svg.childElementCount == 3){ //3 lines (children) under viewbox. Add 2 profiles as children.
+    newProfile1 = drawProfile(displayeProfileConverted, id) 
+    newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil1")
+    fullSpeedTest = drawProfile(displayProfileFullspeed, "5km for stærkt")
 
     svg.appendChild(newProfile1)
-    svg.appendChild(newProfile3)
+    svg.appendChild(newProfile2)
     svg.appendChild(fullSpeedTest)
 
-    newProfile1 = drawShadowProfile(asymmetriskProfil, "shadowProfil1")
-    newProfile3 = drawProfile(convertedProfil, id)
+    newProfile1 = drawProfile(displayProfileFullspeed, id)
+    newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil1")
 
     svgProfileOnly.appendChild(newProfile1)
-    svgProfileOnly.appendChild(newProfile3)
+    svgProfileOnly.appendChild(newProfile2)
   } 
 }
 
@@ -430,21 +440,19 @@ function useRute1(){
 function useRute2(){
   sideprofiler = []
   sideprofilIndex = 0
-  
-  //Bare for at rykke profilen for at se om der er sammenstød
-  for(c = 0; c < sideprofil1.length; c++){
-    sideprofil1[c][0] = sideprofil1[c][0] + 350
-  }
-  
+   
   sideprofiler.push(sideprofil1)
   sideprofiler.push(sideprofil3)
   sideprofiler.push(sideprofil2)
 
-  halvside = convertToSymmetricProfile(profilVogn)
-
+  //Se om første sideprofil rammer profil eller dens symmetriske halvside
+  halvsideprofil = convertToSymmetricProfile(displayProfile)
   //Der er en lille fejlmargin. Hvis det er på præcis samme koordinat, så registrer den ikke. hvis sideobjekt = 900, så true på 899&901
-  isCollision(sideprofiler[0], halvside);
+  isCollision(sideprofiler[0], halvsideprofil);
+  //Se om første sideprofil rammer profil med fuld speed 
+  isCollision(sideprofiler[0], displayProfileFullspeed)
   
+  //Transformere sideprofiler, så de kan blive vist på svg. 
   for(i in sideprofiler){
       tal = parseInt(i)
       sideprofiler[i] = convertProfilToSvgFormat(sideprofiler[i])
@@ -453,6 +461,7 @@ function useRute2(){
   if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements. We need to remove wayside object(element 7) if we change new route
     svg.removeChild(svg.lastChild)
   }
+  //viser første sideprofil
   newProfile = drawProfile(sideprofiler[0], "sideprofil")
   svg.appendChild(newProfile)
 }
