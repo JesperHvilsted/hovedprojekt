@@ -262,67 +262,51 @@ function displayProfil(profilVogn, id){
     let child = svg.children[i]
     if(child.id == "btnIndlæsknap"){
   
-      newProfile = drawProfile(displayeProfileConverted, id)
-      newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil2")
-      fullSpeedTest = drawProfile(displayProfileFullspeed, "5km for stærkt")
+      newProfile1 = drawProfile(displayProfileFullspeed, "5km for stærkt")
+      newProfile2 = drawShadowProfile(displayProfileShadow, id)
 
-      svg.appendChild(newProfile)
+      svg.appendChild(newProfile1)
       svg.appendChild(newProfile2)
-      svg.appendChild(fullSpeedTest)
 
-      svg.replaceChild(newProfile,child)
-      svg.replaceChild(newProfile2,svg.children[i +1])
-      svg.replaceChild(fullSpeedTest,svg.children[i+2])
+      svg.replaceChild(newProfile1,svg.children[i-1])
+      svg.replaceChild(newProfile2,child)
 
-      newProfile = drawProfile(displayeProfileConverted, id)
-      newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil2")
+      newProfile = drawShadowProfile(displayProfileShadow, id)
 
       svgProfileOnly.appendChild(newProfile)
-      svgProfileOnly.appendChild(newProfile2)
 
-      svgProfileOnly.replaceChild(newProfile,svgProfileOnly.children[i])
-      svgProfileOnly.replaceChild(newProfile2,svgProfileOnly.children[i +1])
+      svgProfileOnly.replaceChild(newProfile,svgProfileOnly.children[i-1])
 
     }
     if(child.id == "btnUseDrawProfile"){
 
-      newProfile = drawProfile(displayeProfileConverted, id)
-      newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil2")
-      fullSpeedTest = drawProfile(displayProfileFullspeed, "5km for stærkt")
+      newProfile1 = drawProfile(displayProfileFullspeed, "5km for stærkt")
+      newProfile2 = drawShadowProfile(displayProfileShadow, id)
 
-      svg.appendChild(newProfile)
+      svg.appendChild(newProfile1)
       svg.appendChild(newProfile2)
-      svg.appendChild(fullSpeedTest)
 
-      svg.replaceChild(newProfile,child)
-      svg.replaceChild(newProfile2,svg.children[i+1])
-      svg.replaceChild(fullSpeedTest,svg.children[i+2])
-
-      newProfile = drawProfile(displayeProfileConverted, id)
-      newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil2")
+      svg.replaceChild(newProfile1,svg.children[i-1])
+      svg.replaceChild(newProfile2,child)
+  
+      newProfile = drawShadowProfile(displayProfileShadow, id)
 
       svgProfileOnly.appendChild(newProfile)
-      svgProfileOnly.appendChild(newProfile2)
 
-      svgProfileOnly.replaceChild(newProfile,svgProfileOnly.children[i])
-      svgProfileOnly.replaceChild(newProfile2,svgProfileOnly.children[i+1])
+      svgProfileOnly.replaceChild(newProfile,svgProfileOnly.children[i-1])
     }
   }
  
-  if(svg.childElementCount == 3){ //3 lines (children) under viewbox. Add 2 profiles as children.
-    newProfile1 = drawProfile(displayeProfileConverted, id) 
-    newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil1")
-    fullSpeedTest = drawProfile(displayProfileFullspeed, "5km for stærkt")
+  if(svg.childElementCount == 3){ //3 lines (children) under viewbox. Add 2 profiles as children. 
+    newProfile1 = drawProfile(displayProfileFullspeed, "5km for stærkt")
+    newProfile2 = drawShadowProfile(displayProfileShadow, id)
 
     svg.appendChild(newProfile1)
     svg.appendChild(newProfile2)
-    svg.appendChild(fullSpeedTest)
 
-    newProfile1 = drawProfile(displayProfileFullspeed, id)
-    newProfile2 = drawShadowProfile(displayProfileShadow, "shadowProfil1")
+    newProfile1 = drawShadowProfile(displayProfileShadow, id)
 
     svgProfileOnly.appendChild(newProfile1)
-    svgProfileOnly.appendChild(newProfile2)
   } 
 }
 
@@ -423,14 +407,14 @@ function chooseRoute(){
 function useRute1(){
     sideprofiler = []
     sideprofilIndex = 0
-    sideprofiler.push(sideprofil1)
-    sideprofiler.push(sideprofil2)
     sideprofiler.push(sideprofil3)
+    sideprofiler.push(sideprofil2)
+    sideprofiler.push(sideprofil1)
     for(i in sideprofiler){
         tal = parseInt(i)
         sideprofiler[i] = convertProfilToSvgFormat(sideprofiler[i])
     }
-    if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements. We need to remove wayside object(element 7) if we change new route
+    if(svg.childElementCount > 5){ //3 lines (children) under viewbox and 2 profiles as children = 5 elements. We need to remove wayside object(element 6) if we change new route
       svg.removeChild(svg.lastChild)
     }
     newProfile = drawProfile(sideprofiler[0], "sideprofil")
@@ -458,7 +442,7 @@ function useRute2(){
       sideprofiler[i] = convertProfilToSvgFormat(sideprofiler[i])
   }
 
-  if(svg.childElementCount > 6){ //3 lines (children) under viewbox and 3 profiles as children = 6 elements. We need to remove wayside object(element 7) if we change new route
+  if(svg.childElementCount > 5){ //3 lines (children) under viewbox and 2 profiles as children = 5 elements. We need to remove wayside object(element 6) if we change new route
     svg.removeChild(svg.lastChild)
   }
   //viser første sideprofil
